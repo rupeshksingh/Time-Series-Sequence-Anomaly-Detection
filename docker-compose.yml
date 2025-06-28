@@ -1,0 +1,36 @@
+services:
+  anomaly-detector:
+    build: .
+    container_name: speed-anomaly-detector
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount data files
+      - .Data/labelled_1_23.csv:/app/labelled_1_23.csv
+      - .Data/input_data.csv:/app/input_data.csv
+      
+      # Mount models directory for persistence
+      - ./models:/app/models
+      - ./results:/app/results
+      
+      # Mount uploads and api_results for persistence
+      - ./uploads:/app/uploads
+      - ./api_results:/app/api_results
+      
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_CPP_MIN_LOG_LEVEL=2
+    restart: unless-stopped
+    
+  # Optional: Nginx reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    container_name: anomaly-detector-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - anomaly-detector
+    profiles:
+      - production

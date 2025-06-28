@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Sensor Anomaly Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line"></i> Speed Anomaly Detection
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text" id="modelStatus">
+                    <i class="fas fa-circle text-warning"></i> Loading...
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <!-- Model Info Card -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-brain"></i> Model Information
+                    </div>
+                    <div class="card-body">
+                        <div id="modelInfo">
+                            <p class="text-muted">Loading model info...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Card -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-upload"></i> Upload Data
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm">
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="fileInput" accept=".csv">
+                            </div>
+                            <div class="mb-3">
+                                <label for="thresholdInput" class="form-label">
+                                    Threshold Override
+                                    <i class="fas fa-question-circle" data-bs-toggle="tooltip" 
+                                       title="Leave empty to use model default"></i>
+                                </label>
+                                <input type="number" class="form-control" id="thresholdInput" 
+                                       step="0.01" min="0.01" max="1.0" placeholder="Auto">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
+                                <i class="fas fa-play"></i> Analyze
+                            </button>
+                        </form>
+                        <div id="uploadStatus" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Real-time Monitor Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-satellite-dish"></i> Real-time Monitor
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-success w-100 mb-2" id="startRealtimeBtn">
+                            <i class="fas fa-play"></i> Start Monitoring
+                        </button>
+                        <button class="btn btn-danger w-100 mb-2" id="stopRealtimeBtn" style="display: none;">
+                            <i class="fas fa-stop"></i> Stop Monitoring
+                        </button>
+                        <div id="realtimeStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Results Summary -->
+                <div id="resultsSummary" class="alert alert-info" style="display: none;">
+                    <h5><i class="fas fa-chart-bar"></i> Analysis Results</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <div class="metric">
+                                <div class="metric-value" id="totalPoints">-</div>
+                                <div class="metric-label">Total Points</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric">
+                                <div class="metric-value text-danger" id="anomaliesDetected">-</div>
+                                <div class="metric-label">Anomalies</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric">
+                                <div class="metric-value text-warning" id="anomalyRate">-</div>
+                                <div class="metric-label">Anomaly Rate</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric">
+                                <div class="metric-value text-info" id="thresholdUsed">-</div>
+                                <div class="metric-label">Threshold</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary mt-3" id="downloadBtn" style="display: none;">
+                        <i class="fas fa-download"></i> Download Results
+                    </button>
+                </div>
+
+                <!-- Charts -->
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-line"></i> Speed & Anomalies
+                            </div>
+                            <div class="card-body">
+                                <canvas id="speedChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area"></i> Anomaly Scores
+                            </div>
+                            <div class="card-body">
+                                <canvas id="scoreChart" height="80"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anomaly Segments Table -->
+                <div class="card" id="segmentsCard" style="display: none;">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i> Anomaly Segments
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="segmentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Start Time</th>
+                                        <th>Duration</th>
+                                        <th>Max Score</th>
+                                        <th>Mean Speed</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Modal -->
+    <div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <h5>Processing Data</h5>
+                    <p class="text-muted">Detecting anomalies in your data...</p>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
