@@ -1,0 +1,60 @@
+============================================================
+SPEED SENSOR ANOMALY DETECTION REPORT
+============================================================
+
+Generated: 2025-06-28 16:22:07
+Model: models/
+
+DATA SUMMARY
+----------------------------------------
+Total data points: 34,599
+Valid predictions: 34,540
+Time range: 2025-05-27 10:57:17+00:00 to 2025-05-27 20:34:38+00:00
+Speed range: 20434.90 to 23919.40
+
+DETECTION RESULTS
+----------------------------------------
+Anomalies detected: 34,182
+Anomaly rate: 98.96%
+Detection threshold: 0.100000
+Window size: 60
+
+SPEED STATISTICS
+----------------------------------------
+Overall:
+  Mean: 23031.65
+  Std:  340.95
+  Min:  20434.90
+  Max:  23919.40
+
+Normal points:
+  Mean: 23200.39
+  Std:  87.78
+
+Anomalous points:
+  Mean: 23029.59
+  Std:  342.37
+
+ANOMALY SEGMENTS
+----------------------------------------
+Total segments: 17
+Duration statistics:
+  Mean: 2010.7 points
+  Max:  13401 points
+  Min:  1 points
+
+Top 10 segments by anomaly score:
+ 1. Score: 405477669904740384768.0000, Duration: 13401, Time: 2025-05-27 16:50:59+00:00
+ 2. Score: 1120853013301700224.0000, Duration: 5102, Time: 2025-05-27 10:58:16+00:00
+ 3. Score: 486363099170578752.0000, Duration: 5609, Time: 2025-05-27 12:24:47+00:00
+ 4. Score: 8824537491208614.0000, Duration: 9404, Time: 2025-05-27 14:00:48+00:00
+ 5. Score: 2687342.8455, Duration:  456, Time: 2025-05-27 16:40:36+00:00
+ 6. Score: 124.5147, Duration:   64, Time: 2025-05-27 16:49:02+00:00
+ 7. Score:  79.5690, Duration:   41, Time: 2025-05-27 16:38:36+00:00
+ 8. Score:   9.6224, Duration:   22, Time: 2025-05-27 13:59:07+00:00
+ 9. Score:   0.1866, Duration:   23, Time: 2025-05-27 16:39:55+00:00
+10. Score:   0.1354, Duration:   19, Time: 2025-05-27 16:48:37+00:00
+
+============================================================
+END OF REPORT
+============================================================
