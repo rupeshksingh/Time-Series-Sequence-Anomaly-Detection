@@ -1,9 +1,10 @@
 # Speed Sensor Anomaly Detection System
 
-A CPU-optimized anomaly detection system for univariate speed sensor data using LSTM autoencoders. This implementation addresses the issues found in the original model and provides a clean, production-ready solution.
+A CPU-optimized anomaly detection system for univariate speed sensor data using LSTM autoencoders. This implementation addresses the issues found in the original model and provides a clean, production-ready solution with both CLI and web interfaces.
 
 ## 🚀 Quick Start
 
+### Option 1: Command Line Interface
 ```bash
 # Install dependencies
 pip install -r requirements.txt
@@ -18,22 +19,60 @@ python main.py test
 python main.py both
 ```
 
+### Option 2: Web Interface (NEW!)
+```bash
+# Install web dependencies
+pip install -r requirements_updated.txt
+
+# Start web application
+python app.py
+
+# Open browser to http://localhost:8000
+```
+
+See `WEB_SETUP.md` for detailed web deployment instructions.
+
 ## 📁 Project Structure
 
 ```
 speed-anomaly-detection/
-├── config.py              # Configuration settings
-├── anomaly_detector.py    # Main detector class
-├── train_model.py         # Training script
-├── test_unlabeled.py      # Testing script
-├── utils.py               # Utility functions
-├── main.py                # Main execution script
-├── requirements.txt       # Dependencies
-├── README.md              # This file
-├── labelled_1_23.csv      # Training data (your file)
-├── input_data.csv         # Unlabeled data (your file)
-├── models/                # Saved models (created)
-└── results/               # Results and visualizations (created)
+├── Core Implementation
+│   ├── config.py              # Configuration settings
+│   ├── anomaly_detector.py    # Main detector class
+│   ├── train_model.py         # Training script
+│   ├── test_unlabeled.py      # Testing script
+│   ├── utils.py               # Utility functions
+│   └── main.py                # Main CLI script
+│
+├── Web Interface (NEW!)
+│   ├── app.py                 # FastAPI application
+│   ├── templates/
+│   │   └── index.html        # Web UI
+│   ├── static/
+│   │   ├── app.js           # Frontend JavaScript
+│   │   └── style.css        # Styling
+│   ├── api_client.py         # API client example
+│   └── run.sh               # Startup script
+│
+├── Deployment
+│   ├── Dockerfile            # Container config
+│   ├── docker-compose.yml    # Docker Compose
+│   └── nginx.conf           # Nginx config
+│
+├── Documentation
+│   ├── requirements.txt      # CLI dependencies
+│   ├── requirements_updated.txt # Web dependencies
+│   ├── README.md            # This file
+│   ├── README_DEPLOYMENT.md # Web deployment guide
+│   └── WEB_SETUP.md        # Quick web setup
+│
+├── Data & Models
+│   ├── labelled_1_23.csv    # Training data
+│   ├── input_data.csv       # Unlabeled data
+│   ├── models/              # Saved models
+│   ├── results/             # CLI results
+│   ├── uploads/             # Web uploads
+│   └── api_results/         # API results
 ```
 
 ## 🔑 Key Features
@@ -43,6 +82,9 @@ speed-anomaly-detection/
 3. **Robust Threshold**: Automatic threshold adjustment to prevent issues
 4. **Comprehensive Analysis**: Detailed visualizations and reports
 5. **Production Ready**: Clean code structure with error handling
+6. **Web Interface**: Interactive dashboard with real-time monitoring (NEW!)
+7. **REST API**: Full API for programmatic access (NEW!)
+8. **Docker Support**: Easy deployment with containers (NEW!)
 
 ## 📊 Key Findings Addressed
 
@@ -79,7 +121,7 @@ BATCH_SIZE = 32           # Optimized for CPU
 
 ## 📈 Usage Examples
 
-### Basic Training and Testing
+### Command Line Interface
 ```bash
 # Train a new model
 python main.py train
@@ -88,13 +130,33 @@ python main.py train
 python main.py test
 ```
 
+### Web Interface
+```bash
+# Start web server
+python app.py
+
+# Access dashboard
+# Open http://localhost:8000 in browser
+```
+
+### API Usage
+```python
+from api_client import AnomalyDetectionClient
+
+client = AnomalyDetectionClient()
+results = client.analyze_file('data.csv', threshold=0.1)
+print(f"Anomalies: {results['anomalies_detected']}")
+```
+
 ### Custom Threshold Testing
 ```bash
-# Test with more sensitive threshold
+# CLI
 python main.py test --threshold 0.05
 
-# Test with less sensitive threshold
-python main.py test --threshold 0.2
+# Web API
+curl -X POST http://localhost:8000/api/detect/FILE_ID \
+  -H "Content-Type: application/json" \
+  -d '{"threshold": 0.05}'
 ```
 
 ### Force Retraining
@@ -206,6 +268,17 @@ Edit `extract_features()` in `anomaly_detector.py` to add domain-specific featur
 1. **Training Time**: ~5-10 minutes on CPU for 20 epochs
 2. **Memory Usage**: ~2-4 GB RAM
 3. **Inference Speed**: ~1000 samples/second on CPU
+4. **Web Interface**: Modern dashboard with real-time monitoring
+5. **API Support**: Full REST API for integration
+6. **Docker Ready**: Containerized deployment available
+
+## 🌐 Web Features
+
+- **Interactive Dashboard**: Upload files and view results
+- **Real-time Monitoring**: WebSocket-based live detection
+- **Visualization**: Interactive charts with Chart.js
+- **API Access**: RESTful endpoints for automation
+- **Docker Deployment**: Production-ready containers
 
 ## 🤝 Contributing
 
